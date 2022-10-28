@@ -1,51 +1,61 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, { useState, useEffect, useRef } from 'react';
 
-// - props are whatever is added to the input box
 function TodoForm(props) {
-    // - dynamic value of the input tags
-    const [input, setInput] = useState('')
+  const [input, setInput] = useState(props.edit ? props.edit.value : '');
 
-    const inputRef = useRef(null)
+const inputRef = useRef(null);
 
-    useEffect(() => {
-        inputRef.current.focus()
-    })
+  useEffect(() => {
+    inputRef.current.focus();
+  });
 
+  const handleChange = e => {
+    setInput(e.target.value);
+  };
 
-    const handleChange = e => {
-        // - sets the input value to whatever the user types
-        setInput(e.target.value);
-    }
+  const handleSubmit = e => {
+    e.preventDefault();
 
-    const handleSumbit = e => {
-        e.preventDefault();
-
-        props.onSubmit({
-            // - generates a random id between 1 and 10000 INSPECT
-            id:Math.floor(Math.random() * 1000),
-            text: input
-        });
-
-        // - resets the input tag to an empty string after you git the submit button
-        setInput('')
-    }
+    props.onSubmit({
+      id: Math.floor(Math.random() * 10000),
+      text: input
+    });
+    setInput('');
+  };
 
   return (
-    <div>
-        <form className='todo-form' onSubmit={handleSumbit}>
-            <input 
-            type='text'
-            placeholder='Add a Todo'
+    <form onSubmit={handleSubmit} className='todo-form'>
+      {props.edit ? (
+        <>
+          <input
+            placeholder='Update your item'
             value={input}
+            onChange={handleChange}
+            name='text'
+            ref={inputRef}
+            className='todo-input edit'
+          />
+          <button onClick={handleSubmit} className='todo-button edit'>
+            Update
+          </button>
+        </>
+      ) : (
+        <>
+          <input
+            placeholder='Add a todo'
+            value={input}
+            onChange={handleChange}
             name='text'
             className='todo-input'
-            onChange={handleChange}
             ref={inputRef}
-            />
-            <button className='todo-button'>Add ToDo</button>
-        </form>
-    </div>
-  )
+          />
+          <button onClick={handleSubmit} className='todo-button'>
+            Add todo
+          </button>
+        </>
+      )}
+    </form>
+  );
 }
 
-export default TodoForm
+export default TodoForm;
